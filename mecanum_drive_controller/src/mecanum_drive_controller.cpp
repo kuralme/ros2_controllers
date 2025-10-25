@@ -19,6 +19,7 @@
 #include <string>
 #include <vector>
 
+#include "control_toolbox/tf_utils.hpp"
 #include "controller_interface/helpers.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "lifecycle_msgs/msg/state.hpp"
@@ -146,26 +147,17 @@ controller_interface::CallbackReturn MecanumDriveController::on_configure(
     return controller_interface::CallbackReturn::ERROR;
   }
 
-  // Append the tf prefix if there is one
-  std::string tf_prefix = "";
-  if (params_.tf_frame_prefix_enable)
-  {
-    tf_prefix = params_.tf_frame_prefix != "" ? params_.tf_frame_prefix
-                                              : std::string(get_node()->get_namespace());
-
-    // Make sure prefix does not start with '/' and always ends with '/'
-    if (tf_prefix.back() != '/')
-    {
-      tf_prefix = tf_prefix + "/";
-    }
-    if (tf_prefix.front() == '/')
-    {
-      tf_prefix.erase(0, 1);
-    }
-  }
-
-  const auto odom_frame_id = tf_prefix + params_.odom_frame_id;
-  const auto base_frame_id = tf_prefix + params_.base_frame_id;
+  // apply the TF prefix if not empty, otherwise use the node namespace
+  const auto odom_frame_id =
+    params_.tf_frame_prefix_enable
+      ? control_toolbox::apply_tf_prefix(
+          params_.tf_frame_prefix, get_node()->get_namespace(), params_.odom_frame_id)
+      : params_.odom_frame_id;
+  const auto base_frame_id =
+    params_.tf_frame_prefix_enable
+      ? control_toolbox::apply_tf_prefix(
+          params_.tf_frame_prefix, get_node()->get_namespace(), params_.base_frame_id)
+      : params_.base_frame_id;
 
   odom_state_msg_.header.stamp = get_node()->now();
   odom_state_msg_.header.frame_id = odom_frame_id;

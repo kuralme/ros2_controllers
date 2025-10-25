@@ -8,6 +8,7 @@ export_windows_symbols()
 # Find dependencies
 set(THIS_PACKAGE_INCLUDE_DEPENDS
   ament_cmake
+  control_toolbox
   controller_interface
   generate_parameter_library
   geometry_msgs
@@ -42,6 +43,7 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} PUBLIC
   ${PROJECT_NAME}_parameters
   Eigen3::Eigen
+  control_toolbox::control_toolbox
   controller_interface::controller_interface
   hardware_interface::hardware_interface
   pluginlib::pluginlib

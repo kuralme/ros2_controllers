@@ -7,6 +7,7 @@ export_windows_symbols()
 
 # find dependencies
 set(THIS_PACKAGE_INCLUDE_DEPENDS
+  control_toolbox
   controller_interface
   hardware_interface
   generate_parameter_library
@@ -43,6 +44,7 @@ target_include_directories(mecanum_drive_controller PUBLIC
   "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
 target_link_libraries(mecanum_drive_controller PUBLIC
                       mecanum_drive_controller_parameters
+                      control_toolbox::control_toolbox
                       controller_interface::controller_interface
                       hardware_interface::hardware_interface
                       pluginlib::pluginlib
